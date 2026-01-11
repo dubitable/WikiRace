@@ -8,10 +8,8 @@ load_dotenv()
 URI = os.getenv("NEO4J_URI")
 AUTH = (os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD"))
 DATABASE = "wikirace"
-driver = GraphDatabase.driver(URI, auth=AUTH)
-driver.verify_connectivity()
 
-def get_unexplored():
+def get_unexplored(driver):
     records = driver.execute_query("""
             MATCH (a: Article {explored: FALSE}) 
             RETURN a.name AS name
@@ -21,7 +19,7 @@ def get_unexplored():
     
     return [record.data()["name"] for record in records]
 
-def create_article(parent, child):
+def create_article(driver, parent, child):
     driver.execute_query("""
         MATCH (p:Article {name: $parent})
         MERGE (c:Article {name: $child})
@@ -33,7 +31,7 @@ def create_article(parent, child):
         database_=DATABASE,
     )
 
-def update_explored(name):
+def update_explored(driver, name):
     driver.execute_query("""
         MATCH (a:Article {name: $name})
         SET a.explored = TRUE
@@ -42,10 +40,10 @@ def update_explored(name):
         database_=DATABASE,
     )
 
-def main():
+def main(driver):
     print("[LOG] Checking unexplored")
 
-    unexplored = get_unexplored()
+    unexplored = get_unexplored(driver)
 
     print(f"[LOG] {len(unexplored)} items to explore")
 
@@ -58,11 +56,11 @@ def main():
         links = get_all_links(name)
 
         for link in links:
-            create_article(name, link)
+            create_article(driver, name, link)
 
-        update_explored(name)
+        update_explored(driver, name)
     
-    main()
-        
-main()
-driver.close()
+    main(driver)
+
+with GraphDatabase.driver(URI, auth=AUTH) as driver:
+    main(driver)
