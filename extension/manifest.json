@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Wiki Race",
+  "version": "1.0",
+  "description": "Challenge yourself with the greatest test of intelligence: wikiracing.",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "images/icon.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["scripts/wiki.js"],
+      "matches": ["https://en.wikipedia.org/wiki/*"]
+    }
+  ]
+}

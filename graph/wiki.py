@@ -2,7 +2,7 @@ import requests, time
 
 BASE_URL = "https://en.wikipedia.org/w/api.php"
 USER_AGENT =  "WikiGraph/1.0 (pierrequereuil@gmail.com)"
-TIME_DELAY = 1
+TIME_DELAY = 0.5
 
 def get_params(title, continue_token):
     return {
