@@ -40,6 +40,16 @@ def update_explored(driver, name):
         database_=DATABASE,
     )
 
+out_bounds = ["Talk", "User", "Wikipedia", "File", "MediaWiki", "Template", "Help", "Category", "Portal", "Draft", "MOS", "TimedText", "Module", "Event",
+              "Book", "Course", "Institution", "Education Program", "Gadget", "Gadget definition", "Topic",
+              "Special", "Media"]
+
+def is_out_bounds(name):
+    for out_bound in out_bounds:
+        if name.startswith(out_bound + ":") or name.startswith(out_bound + " talk:"):
+            return True
+    return False
+
 def main(driver):
     print("[LOG] Checking unexplored")
 
@@ -56,6 +66,7 @@ def main(driver):
         links = get_all_links(name)
 
         for link in links:
+            if (is_out_bounds(link)): continue
             create_article(driver, name, link)
 
         update_explored(driver, name)
